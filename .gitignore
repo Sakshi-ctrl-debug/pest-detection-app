@@ -1,0 +1,35 @@
+# Flutter
+pest_detection_app/build/
+pest_detection_app/.dart_tool/
+pest_detection_app/.packages
+pest_detection_app/.pub/
+pest_detection_app/android/.gradle/
+pest_detection_app/android/app/build/
+pest_detection_app/ios/
+pest_detection_app/linux/
+pest_detection_app/macos/
+pest_detection_app/windows/
+
+# Python
+pest_detection_backend/venv/
+pest_detection_backend/__pycache__/
+*.pyc
+
+# Large files
+*.h5
+*.zip
+*.csv
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Android
+.gradle/
+local.properties
+
+# Logs
+*.log
