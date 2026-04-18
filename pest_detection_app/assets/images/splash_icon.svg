@@ -1,0 +1,34 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E9FCF0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F3FBF6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22C55E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16A34A;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="url(#bgGradient)" stroke="#22C55E" stroke-width="2"/>
+
+  <!-- Leaf shape -->
+  <path d="M100 40 C120 40, 140 60, 140 80 C140 100, 120 120, 100 140 C80 120, 60 100, 60 80 C60 60, 80 40, 100 40 Z"
+        fill="url(#iconGradient)"
+        stroke="#16A34A"
+        stroke-width="2"/>
+
+  <!-- Bug icon in center -->
+  <circle cx="100" cy="90" r="15" fill="#DC2626" stroke="#B91C1C" stroke-width="2"/>
+  <circle cx="85" cy="75" r="8" fill="#DC2626" stroke="#B91C1C" stroke-width="1"/>
+  <circle cx="115" cy="75" r="8" fill="#DC2626" stroke="#B91C1C" stroke-width="1"/>
+  <circle cx="100" cy="105" r="6" fill="#DC2626" stroke="#B91C1C" stroke-width="1"/>
+  <circle cx="100" cy="115" r="4" fill="#DC2626" stroke-width="1"/>
+
+  <!-- Antennae -->
+  <line x1="100" y1="75" x2="95" y2="65" stroke="#DC2626" stroke-width="2"/>
+  <line x1="100" y1="75" x2="105" y2="65" stroke="#DC2626" stroke-width="2"/>
+  <circle cx="95" cy="63" r="2" fill="#DC2626"/>
+  <circle cx="105" cy="63" r="2" fill="#DC2626"/>
+</svg>

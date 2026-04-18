@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../widgets/animated_button.dart';
 
 class ResultScreen extends StatefulWidget {
   final Map<String, dynamic> result;
@@ -158,77 +159,237 @@ class _ResultScreenState extends State<ResultScreen>
   Widget build(BuildContext context) {
     final pest = widget.result['pest'];
     final confidence = widget.result['confidence'];
+    final info = widget.result['info'];
 
     return Scaffold(
-      appBar: AppBar(title: const Text("AI Pest Detection")),
+      backgroundColor: const Color(0xFFF6F9F7),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: Colors.black87),
+        title: const Text(
+          'Detection Result',
+          style: TextStyle(color: Colors.black87),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _imageCard(
-              "Uploaded Image",
-              Image.file(widget.imageFile),
-            ),
-
-            const SizedBox(height: 20),
-
-            _imageCard(
-              "AI Analyzed Image",
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final size =
-                      Size(constraints.maxWidth, constraints.maxWidth);
-
-                  return SizedBox(
-                    width: size.width,
-                    height: size.height,
-                    child: Stack(
+            Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(26),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 22,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade700.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: const Icon(
+                      Icons.bug_report,
+                      size: 30,
+                      color: Colors.green,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.file(widget.imageFile,
-                            width: size.width,
-                            height: size.height,
-                            fit: BoxFit.cover),
-                        ..._drawBoxes(size),
-                        _scanner(size),
+                        const Text(
+                          'Detected Pest',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '$pest',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Confidence: ${confidence.toString()}%',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                        ),
                       ],
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
             ),
-
-            const SizedBox(height: 20),
-
-            Card(
-              child: ListTile(
-                leading:
-                    const Icon(Icons.bug_report, color: Colors.green),
-                title: const Text("Detected Pest"),
-                subtitle: Text("$pest ($confidence%)"),
+            const SizedBox(height: 24),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(28),
+              child: Image.file(
+                widget.imageFile,
+                width: double.infinity,
+                height: 320,
+                fit: BoxFit.cover,
               ),
             ),
-
-            Card(
-              child: ListTile(
-                title: const Text("Damage"),
-                subtitle: Text(widget.result['info']['damage']),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(26),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 18,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white,
+                    Colors.green.shade50.withOpacity(0.3),
+                  ],
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade100,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Icon(
+                          Icons.info_outline,
+                          color: Colors.green,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      const Text(
+                        'Pest Information',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.green.shade100),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _infoRow('Status', '$pest detected'),
+                        const SizedBox(height: 12),
+                        _infoRow('Confidence', '${confidence.toString()}%'),
+                        const SizedBox(height: 12),
+                        if (info is String)
+                          Text(
+                            info,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black87,
+                              height: 1.5,
+                            ),
+                          )
+                        else
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _infoRow('Damage', info['damage'] ?? 'N/A'),
+                              const SizedBox(height: 12),
+                              _infoRow('Prevention', info['prevention'] ?? 'N/A'),
+                              const SizedBox(height: 12),
+                              _infoRow('Treatment', info['treatment'] ?? 'N/A'),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            Card(
-              child: ListTile(
-                title: const Text("Prevention"),
-                subtitle: Text(widget.result['info']['prevention']),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: const Text("Treatment"),
-                subtitle: Text(widget.result['info']['treatment']),
+            const SizedBox(height: 24),
+            AnimatedButton(
+              onPressed: () => Navigator.pop(context),
+              backgroundColor: Colors.green.shade800,
+              foregroundColor: Colors.white,
+              borderRadius: 18,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.arrow_back),
+                  SizedBox(width: 8),
+                  Text('Scan Another Image'),
+                ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _infoRow(String title, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 92,
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.black54,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

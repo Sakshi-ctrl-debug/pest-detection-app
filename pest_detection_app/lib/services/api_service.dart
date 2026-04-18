@@ -3,22 +3,40 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // Use your PC LAN IP
-  static const String baseUrl = "http://10.184.189.238:8000";
+  static const String baseUrl = "https://dubbed-disregard-deepness.ngrok-free.dev";
 
   static Future<Map<String, dynamic>?> detectPest(File image) async {
-    var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/detect-pest'));
-    request.files.add(await http.MultipartFile.fromPath('file', image.path));
+    print("🔥 API CALLED");
 
     try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/detect-pest'),
+      );
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          image.path,
+        ),
+      );
+
       var response = await request.send();
+
+      print("📡 Status Code: ${response.statusCode}");
+
+      var respStr = await response.stream.bytesToString();
+      print("📦 Response Body: $respStr");
+
       if (response.statusCode == 200) {
-        var respStr = await response.stream.bytesToString();
         return jsonDecode(respStr);
+      } else {
+        print("❌ Error: ${response.statusCode}");
       }
     } catch (e) {
-      print("Error: $e");
+      print("💥 Exception: $e");
     }
+
     return null;
   }
 }
