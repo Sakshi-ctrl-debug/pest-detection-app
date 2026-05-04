@@ -37,7 +37,7 @@ class _ResultScreenState extends State<ResultScreen>
   }
 
   int _boxCount() {
-    final confidence = widget.result['confidence'].toDouble();
+    final confidence = (widget.result['confidence'] ?? 0).toDouble();
     if (confidence >= 90) return 12;
     if (confidence >= 80) return 10;
     if (confidence >= 70) return 8;
@@ -45,121 +45,13 @@ class _ResultScreenState extends State<ResultScreen>
     return 4;
   }
 
-  List<Widget> _drawBoxes(Size size) {
-    int count = _boxCount();
-    List<Widget> widgets = [];
-
-    for (int i = 0; i < count; i++) {
-      double left = _random.nextDouble() * (size.width - 90);
-      double top =
-          size.height * 0.2 + _random.nextDouble() * (size.height * 0.5);
-
-      widgets.add(
-        Positioned(
-          left: left,
-          top: top,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                color: Colors.greenAccent,
-                child: Text(
-                  widget.result['pest'].toString().toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  border:
-                      Border.all(color: Colors.greenAccent, width: 2),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-
-      // Heatmap blob per box
-      widgets.add(
-        Positioned(
-          left: left - 20,
-          top: top - 20,
-          child: Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                colors: [
-                  Colors.red.withOpacity(0.35),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return widgets;
-  }
-
-  Widget _scanner(Size size) {
-    return AnimatedBuilder(
-      animation: _scanController,
-      builder: (_, __) {
-        final scanHeight = size.height * 0.6;
-        final start = size.height * 0.2;
-
-        return Positioned(
-          top: start + scanHeight * _scanController.value,
-          left: 0,
-          right: 0,
-          child: Container(
-            height: 4,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.transparent,
-                  Colors.greenAccent,
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _imageCard(String title, Widget child) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title,
-            style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: child,
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final pest = widget.result['pest'];
-    final confidence = widget.result['confidence'];
-    final info = widget.result['info'];
+    final pest = widget.result['pest'] ?? "Unknown Pest";
+    final confidence = widget.result['confidence'] ?? 0;
+
+    final info = widget.result['info'] ?? {};
+    final marathiName = info['मराठी नाव'] ?? 'No data available';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F9F7),
@@ -178,6 +70,8 @@ class _ResultScreenState extends State<ResultScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+
+            // RESULT CARD
             Container(
               padding: const EdgeInsets.all(22),
               decoration: BoxDecoration(
@@ -219,14 +113,22 @@ class _ResultScreenState extends State<ResultScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '$pest',
+                          pest.toString(),
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
+                        Text(
+                          "मराठी नाव: $marathiName",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
                         Text(
                           'Confidence: ${confidence.toString()}%',
                           style: const TextStyle(
@@ -240,7 +142,10 @@ class _ResultScreenState extends State<ResultScreen>
                 ],
               ),
             ),
+
             const SizedBox(height: 24),
+
+            // IMAGE
             ClipRRect(
               borderRadius: BorderRadius.circular(28),
               child: Image.file(
@@ -250,98 +155,44 @@ class _ResultScreenState extends State<ResultScreen>
                 fit: BoxFit.cover,
               ),
             ),
+
             const SizedBox(height: 24),
+
+            // INFO CARD
             Container(
               padding: const EdgeInsets.all(22),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(26),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 18,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white,
-                    Colors.green.shade50.withOpacity(0.3),
-                  ],
-                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade100,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Icon(
-                          Icons.info_outline,
-                          color: Colors.green,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      const Text(
-                        'Pest Information',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
+                  const Text(
+                    'Pest Information',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.green.shade100),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _infoRow('Status', '$pest detected'),
-                        const SizedBox(height: 12),
-                        _infoRow('Confidence', '${confidence.toString()}%'),
-                        const SizedBox(height: 12),
-                        if (info is String)
-                          Text(
-                            info,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                              height: 1.5,
-                            ),
-                          )
-                        else
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _infoRow('Damage', info['damage'] ?? 'N/A'),
-                              const SizedBox(height: 12),
-                              _infoRow('Prevention', info['prevention'] ?? 'N/A'),
-                              const SizedBox(height: 12),
-                              _infoRow('Treatment', info['treatment'] ?? 'N/A'),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
+
+                  _infoRow('मराठी नाव', marathiName),
+                  const SizedBox(height: 12),
+
+                  _infoRow('Damage', info['damage'] ?? 'No data available'),
+                  const SizedBox(height: 12),
+
+                  _infoRow('Prevention', info['prevention'] ?? 'No data available'),
+                  const SizedBox(height: 12),
+
+                  _infoRow('Treatment', info['treatment'] ?? 'No data available'),
                 ],
               ),
             ),
+
             const SizedBox(height: 24),
+
             AnimatedButton(
               onPressed: () => Navigator.pop(context),
               backgroundColor: Colors.green.shade800,
@@ -368,7 +219,7 @@ class _ResultScreenState extends State<ResultScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 92,
+          width: 100,
           child: Text(
             title,
             style: const TextStyle(
@@ -384,7 +235,6 @@ class _ResultScreenState extends State<ResultScreen>
             value,
             style: const TextStyle(
               fontSize: 14,
-              color: Colors.black87,
               height: 1.5,
             ),
           ),

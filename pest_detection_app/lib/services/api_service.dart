@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = "https://dubbed-disregard-deepness.ngrok-free.dev";
+  static const String baseUrl = "https://pest-backend-3lmw.onrender.com";
 
   static Future<Map<String, dynamic>?> detectPest(File image) async {
     print("🔥 API CALLED");
+    print("➡️ URL: $baseUrl/detect-pest");
 
     try {
       var request = http.MultipartRequest(
@@ -21,17 +22,25 @@ class ApiService {
         ),
       );
 
-      var response = await request.send();
+      // IMPORTANT HEADERS
+      request.headers.addAll({
+        "Accept": "application/json",
+      });
 
-      print("📡 Status Code: ${response.statusCode}");
+      // TIMEOUT ADDED (VERY IMPORTANT FOR RENDER)
+      var streamedResponse =
+          await request.send().timeout(const Duration(seconds: 120));
 
-      var respStr = await response.stream.bytesToString();
-      print("📦 Response Body: $respStr");
+      print("📡 Status Code: ${streamedResponse.statusCode}");
 
-      if (response.statusCode == 200) {
-        return jsonDecode(respStr);
+      var response = await http.Response.fromStream(streamedResponse);
+
+      print("📦 Response Body: ${response.body}");
+
+      if (streamedResponse.statusCode == 200) {
+        return jsonDecode(response.body);
       } else {
-        print("❌ Error: ${response.statusCode}");
+        print("❌ Error: ${streamedResponse.statusCode}");
       }
     } catch (e) {
       print("💥 Exception: $e");
