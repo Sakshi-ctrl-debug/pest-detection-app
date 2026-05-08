@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Pest Detection',
+                          'Agrosarathi',
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         SizedBox(height: 6),
                         Text(
-                          'Upload insect/pest image to identify pests.\nकिडीचा/किटकाचा फोटो अपलोड करा.',
+                          'Helping Farmers Identify Pests',
                           style: TextStyle(fontSize: 15),
                         ),
                       ],
